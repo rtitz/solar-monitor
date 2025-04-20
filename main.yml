@@ -1,0 +1,20 @@
+---
+- hosts: all
+  become: true
+
+  pre_tasks:
+    - name: PRE-TASK - Updating package cache and installing updates
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: full
+        cache_valid_time: 43200 # 43200 seconds = 12 hours
+        force_apt_get: True
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+  tasks:
+    - name: Skip if OS not matching
+      ansible.builtin.meta: end_host
+      when: ansible_distribution != 'Debian' and ansible_distribution != 'Ubuntu'
+
+    - ansible.builtin.import_tasks: install-app.yml
+

@@ -1,0 +1,3 @@
+[prod]
+#localhost   ansible_connection=local 
+10.0.0.4    ansible_connection=ssh  ansible_user=pi

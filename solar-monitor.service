@@ -1,0 +1,16 @@
+[Unit]
+Description=Solar Monitor Service
+ConditionPathExists=/opt/solar-monitor
+After=network.target
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/solar-monitor
+ExecStart=/opt/solar-monitor/bin/solar-monitor
+#Restart=on-failure
+Restart=always
+RestartSec=10
+SyslogIdentifier=solar-monitor
+[Install]
+WantedBy=multi-user.target
