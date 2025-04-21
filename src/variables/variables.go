@@ -21,7 +21,8 @@ var HomeAssistantUpdateIntervalInOutputRefreshLoopIterations int = 5 // For exam
 var HomeAssistantLogApiCallResult200 = true
 var ClearLoopOutput bool = true
 var OutputJson bool = true
-var LogJson string
+var WriteJsonToFile bool = true
+var JsonFile string
 var ForceUpdateHomeAssistant bool
 
 var TotalHouseComsumptionW float64 = 0
@@ -98,7 +99,7 @@ func init() {
 	GOARCH = runtime.GOARCH
 
 	UserHome, _ := os.UserHomeDir()
-	LogJson = UserHome + "/solar.json"
+	JsonFile = UserHome + "/solar.json"
 
 	// HomeAssistant
 	UrlHomeAssistant = "http://10.0.0.8:8123"

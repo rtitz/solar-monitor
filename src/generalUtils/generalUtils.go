@@ -2,6 +2,8 @@ package generalUtils
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -20,4 +22,24 @@ func CreateJSONReaderKeyValue(key, value string) *strings.Reader {
         	"%s": "%s"
     	}`, key, value)
 	return strings.NewReader(jsonStr)
+}
+
+// WriteJsonToFile writes JSON data to a file, creates file if it doesn't exist
+func WriteJsonToFile(data []byte, filename string) error {
+	// Ensure directory exists
+	dir := filepath.Dir(filename)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
+	}
+
+	// Create file if not exists, or open for writing
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write JSON data to file
+	_, err = file.Write(data)
+	return err
 }

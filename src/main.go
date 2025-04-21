@@ -82,6 +82,11 @@ func main() {
 			usingSolarPowerOnly,
 		)
 
+		// Write to JSON file
+		if variables.WriteJsonToFile {
+			generalUtils.WriteJsonToFile(jsonString, variables.JsonFile)
+		}
+
 		// Feed HomeAssistant
 		if !variables.SolarPowerAvailable { // Force HomeAssistant Update if SolarPower becomes unavailable
 			variables.ForceUpdateHomeAssistant = true
