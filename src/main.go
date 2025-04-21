@@ -82,11 +82,6 @@ func main() {
 			usingSolarPowerOnly,
 		)
 
-		// Write to JSON file
-		if variables.WriteJsonToFile {
-			generalUtils.WriteJsonToFile(jsonString, variables.JsonFile)
-		}
-
 		// Feed HomeAssistant
 		if !variables.SolarPowerAvailable { // Force HomeAssistant Update if SolarPower becomes unavailable
 			variables.ForceUpdateHomeAssistant = true
@@ -119,6 +114,11 @@ func main() {
 			homeassistantApi.CallHomeAssisatantApiSet(variables.ApiIntHouseConsumption, generalUtils.CreateJSONReaderKeyValue("state", fmt.Sprintf("%.0f", totalHouseConsumptionW)))
 			homeassistantApi.CallHomeAssisatantApiSet(variables.ApiIntGridFeed, generalUtils.CreateJSONReaderKeyValue("state", fmt.Sprintf("%.0f", totalGridPowerW)))
 
+		}
+
+		// Write to JSON file
+		if variables.WriteJsonToFile {
+			generalUtils.WriteJsonToFile(jsonString, variables.JsonFile)
 		}
 
 		// OUTPUT

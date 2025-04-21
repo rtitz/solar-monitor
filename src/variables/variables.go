@@ -16,7 +16,7 @@ var FetchIntervalInMilliSeconds int = 1000
 var RetryIntervalInMilliSeconds int = 250
 var MaxRetriesToFetchDataUntilInvalid int = 60
 var StartDelayInMilliSeconds int = 2000
-var OutputRefreshIntervalInMilliSeconds int = 2000                   // Also used for JSON file updates
+var OutputRefreshIntervalInMilliSeconds int = 5000                   // Also used for JSON file updates
 var HomeAssistantUpdateIntervalInOutputRefreshLoopIterations int = 5 // For example value 5 means 5 * OutputRefreshIntervalInMilliSeconds (e.g. 2000) = 10.000ms (10s)
 var HomeAssistantLogApiCallResult200 = true
 var ClearLoopOutput bool = true
