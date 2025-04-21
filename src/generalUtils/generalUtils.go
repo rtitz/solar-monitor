@@ -33,13 +33,15 @@ func WriteJsonToFile(data []byte, filename string) error {
 	}
 
 	// Create file if not exists, or open for writing
-	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
 	// Write JSON data to file
+	data = append(data, ',')
+	data = append(data, '\n')
 	_, err = file.Write(data)
 	return err
 }
