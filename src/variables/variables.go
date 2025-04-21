@@ -1,9 +1,9 @@
 package variables
 
 import (
+	"os"
 	"runtime"
-
-	"github.com/mlnoga/rct"
+	"solar-monitor/rctApi"
 )
 
 // App name and version
@@ -11,19 +11,40 @@ var AppName string
 var AppVersion string
 
 var InverterIp string = "10.0.0.17"
+var InverterPort string = "8899"
 var FetchIntervalInMilliSeconds int = 1000
-var RetryIntervalInMilliSeconds int = 200
+var RetryIntervalInMilliSeconds int = 250
+var MaxRetriesToFetchDataUntilInvalid int = 60
 var StartDelayInMilliSeconds int = 2000
-
-var OutputRefreshIntervalInMilliSeconds int = 2000
+var OutputRefreshIntervalInMilliSeconds int = 2000                   // Also used for JSON file updates
+var HomeAssistantUpdateIntervalInOutputRefreshLoopIterations int = 5 // For example value 5 means 5 * OutputRefreshIntervalInMilliSeconds (e.g. 2000) = 10.000ms (10s)
+var HomeAssistantLogApiCallResult200 = true
 var ClearLoopOutput bool = true
+var OutputJson bool = true
+var LogJson string
+var ForceUpdateHomeAssistant bool
 
 var TotalHouseComsumptionW float64 = 0
 var UsingSolarPowerOnly bool = false
+var SolarPowerAvailable bool = false
+
+// JSON DATA
+type JsonData struct {
+	Date                   string  `json:"Date"`
+	Time                   string  `json:"Time"`
+	TimeZone               string  `json:"TimeZone"`
+	SolarGenAPowerW        float64 `json:"SolarGenAPowerW"`
+	SolarGenBPowerW        float64 `json:"SolarGenBPowerW"`
+	InverterACPowerW       float64 `json:"InverterACPowerW"`
+	TotalSolarPowerW       float64 `json:"TotalSolarPowerW"`
+	TotalHouseComsumptionW float64 `json:"TotalHouseComsumptionW"`
+	TotalGridPowerW        float64 `json:"TotalGridPowerW"`
+	UsingSolarPowerOnly    bool    `json:"UsingSolarPowerOnly"`
+}
 
 // RCT DATA
 type RctData struct {
-	Id          rct.Identifier
+	Id          rctApi.Identifier
 	Query       string
 	Output      string
 	DateNow     string
@@ -32,11 +53,11 @@ type RctData struct {
 }
 
 var RctValues = [5]RctData{
-	{Id: rct.SolarGenAPowerW, Query: "float32", Output: "", DateNow: "", TimeNow: "", TimeZoneNow: ""},
-	{Id: rct.SolarGenBPowerW, Query: "float32", Output: "", DateNow: "", TimeNow: "", TimeZoneNow: ""},
-	{Id: rct.InverterACPowerW, Query: "float32", Output: "", DateNow: "", TimeNow: "", TimeZoneNow: ""},
-	{Id: rct.RealPowerW, Query: "float32", Output: "", DateNow: "", TimeNow: "", TimeZoneNow: ""},
-	{Id: rct.TotalGridPowerW, Query: "float32", Output: "", DateNow: "", TimeNow: "", TimeZoneNow: ""},
+	{Id: rctApi.SolarGenAPowerW, Query: "float32", Output: "", DateNow: "", TimeNow: "", TimeZoneNow: ""},
+	{Id: rctApi.SolarGenBPowerW, Query: "float32", Output: "", DateNow: "", TimeNow: "", TimeZoneNow: ""},
+	{Id: rctApi.InverterACPowerW, Query: "float32", Output: "", DateNow: "", TimeNow: "", TimeZoneNow: ""},
+	{Id: rctApi.RealPowerW, Query: "float32", Output: "", DateNow: "", TimeNow: "", TimeZoneNow: ""},
+	{Id: rctApi.TotalGridPowerW, Query: "float32", Output: "", DateNow: "", TimeNow: "", TimeZoneNow: ""},
 }
 
 type CalcData struct {
@@ -52,6 +73,18 @@ var CalcValues = [1]CalcData{
 	{Id: "TotalHouse", Query: "float32", Output: "", DateNow: "", TimeNow: "", TimeZoneNow: ""},
 }
 
+// HomeAssistant
+var UrlHomeAssistant string
+var TokenHomeAssistant string
+var ApiBoolSolarPowerOnly string
+var ApiBoolSolarPowerAvailable string
+var ApiIntSolarGenAPowerW string
+var ApiIntSolarGenBPowerW string
+var ApiIntSolarGenTotalPowerW string
+var ApiIntPVDelivery string
+var ApiIntHouseConsumption string
+var ApiIntGridFeed string
+
 // Other
 var GOOS string
 var GOARCH string
@@ -63,4 +96,19 @@ func init() {
 
 	GOOS = runtime.GOOS
 	GOARCH = runtime.GOARCH
+
+	UserHome, _ := os.UserHomeDir()
+	LogJson = UserHome + "/solar.json"
+
+	// HomeAssistant
+	UrlHomeAssistant = "http://10.0.0.8:8123"
+	ApiBoolSolarPowerOnly = "/api/states/input_boolean.solar_power_only"
+	ApiBoolSolarPowerAvailable = "/api/states/input_boolean.solar_power_available"
+	ApiIntSolarGenAPowerW = "/api/states/input_number.solar_gen_a_power_w"
+	ApiIntSolarGenBPowerW = "/api/states/input_number.solar_gen_b_power_w"
+	ApiIntSolarGenTotalPowerW = "/api/states/input_number.solar_gen_total_power_w"
+	ApiIntPVDelivery = "/api/states/input_number.pv_erzeugung"
+	ApiIntHouseConsumption = "/api/states/input_number.stromverbrauch"
+	ApiIntGridFeed = "/api/states/input_number.pv_einspeisung"
+
 }
