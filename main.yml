@@ -16,5 +16,29 @@
       ansible.builtin.meta: end_host
       when: ansible_distribution != 'Debian' and ansible_distribution != 'Ubuntu'
 
+#    - name: Configure SSH directory for root user
+#      ansible.builtin.file:
+#        path: /root/.ssh
+#        state: directory
+#        mode: '0755'
+#
+#    - name: Configure SSH authorized keys for root user
+#      ansible.builtin.copy:
+#        content: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF976V9tbvLrZGU03BHC6JoeKK4DQDYS/d+DJGLL7WlC rene
+#        dest: /root/.ssh/authorized_keys
+#        owner: root
+#        group: root
+#        mode: '0644'
+#
+#    - name: Add aliases
+#      ansible.builtin.copy:
+#        content: |
+#          alias ls='ls --color'
+#          alias ll='ls -lG'
+#        dest: /etc/profile.d/custom-alias.sh
+#        owner: root
+#        group: root
+#        mode: '0644'
+
     - ansible.builtin.import_tasks: install-app.yml
 

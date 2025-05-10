@@ -55,7 +55,7 @@ func BuildData(c *rctApi.Connection) {
 	var failedToGetDataCounter = 0
 	for {
 		// Get time and date
-		dateNow, timeNow, timezoneNow := generalUtils.GetDateAndTime()
+		dateNow, timeNow, timezoneNow, _, _ := generalUtils.GetDateAndTime()
 		//fmt.Printf("%s %s %s\n", dateNow, timeNow, timezoneNow)
 
 		// Get values
