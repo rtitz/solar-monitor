@@ -1,71 +1,37 @@
 ---
+- name: Create app directory
+  ansible.builtin.file:
+    path: /opt/solar-monitor/bin/
+    state: directory
+    mode: '0644'
+    owner: "root"
+    group: "root"
+    recurse: true
 
-    - name: Create app directory
-      ansible.builtin.file:
-        path: /opt/solar-monitor/bin/
-        state: directory
-        mode: '0644'
-        owner: "root"
-        group: "root"
-        recurse: true
-    
-    - name: Copy application (for i386)
-      ansible.builtin.copy:
-        src: "bin/solar-monitor_linux-386"
-        dest: "/opt/solar-monitor/bin/solar-monitor"
-        owner: root
-        group: root
-        mode: '0755'
-      when: ansible_architecture == 'i386'
-      register: new_app
-    
-    - name: Copy application (for x86_64)
-      ansible.builtin.copy:
-        src: "bin/solar-monitor_linux-amd64"
-        dest: "/opt/solar-monitor/bin/solar-monitor"
-        owner: root
-        group: root
-        mode: '0755'
-      when: ansible_architecture == 'x86_64'
-      register: new_app
-    
-    - name: Copy application (for armv7l)
-      ansible.builtin.copy:
-        src: "bin/solar-monitor_linux-arm"
-        dest: "/opt/solar-monitor/bin/solar-monitor"
-        owner: root
-        group: root
-        mode: '0755'
-      when: ansible_architecture == 'armv7l'
-      register: new_app
-    
-    - name: Copy application (for aarch64)
-      ansible.builtin.copy:
-        src: "bin/solar-monitor_linux-arm64"
-        dest: "/opt/solar-monitor/bin/solar-monitor"
-        owner: root
-        group: root
-        mode: '0755'
-      when: ansible_architecture == 'aarch64'
-      register: new_app
-    
-    - name: Copy systemd service
-      ansible.builtin.copy:
-        src: "solar-monitor.service"
-        dest: "/lib/systemd/system/solar-monitor.service"
-      register: new_svc
-    
-    - name: Ensure service is enabled and started
-      ansible.builtin.systemd:
-        enabled: true
-        state: started
-        daemon_reload: true
-        name: solar-monitor
-      
-    - name: Restart if app or service changed
-      ansible.builtin.systemd:
-        enabled: true
-        state: restarted
-        daemon_reload: true
-        name: solar-monitor
-      when: new_app.changed or new_svc.changed
+- name: Copy application binary
+  ansible.builtin.copy:
+    src: "bin/solar-monitor_linux-{{ arch_map[ansible_architecture] | default(ansible_architecture) }}"
+    dest: "/opt/solar-monitor/bin/solar-monitor"
+    owner: root
+    group: root
+    mode: '0755'
+  vars:
+    arch_map:
+      i386: 386
+      x86_64: amd64
+      armv7l: arm
+      aarch64: arm64
+  register: new_app
+
+- name: Copy systemd service
+  ansible.builtin.copy:
+    src: "solar-monitor.service"
+    dest: "/lib/systemd/system/solar-monitor.service"
+  register: new_svc
+
+- name: Ensure service is enabled and started
+  ansible.builtin.systemd:
+    name: solar-monitor
+    enabled: true
+    state: "{{ (new_app.changed or new_svc.changed) | ternary('restarted', 'started') }}"
+    daemon_reload: true

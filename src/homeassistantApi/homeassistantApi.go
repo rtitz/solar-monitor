@@ -1,7 +1,7 @@
 package homeassistantApi
 
 import (
-	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -10,39 +10,34 @@ import (
 )
 
 func CallHomeAssisatantApiSet(apiCall string, data *strings.Reader) error {
-	var errorReturn error = nil
 	client := &http.Client{}
-	url := variables.UrlHomeAssistant
-	token := variables.TokenHomeAssistant
-
-	req, err := http.NewRequest("POST", url+apiCall, data)
+	req, err := http.NewRequest("POST", variables.UrlHomeAssistant+apiCall, data)
 	if err != nil {
-		errorReturn = err
-		slog.Error("Failed to create new http request", "ERROR", err)
+		slog.Error("Failed to create request", "error", err)
+		return err
 	}
-	req.Header.Set("Authorization", "Bearer "+token)
+
+	req.Header.Set("Authorization", "Bearer "+variables.TokenHomeAssistant)
 	req.Header.Set("Content-Type", "application/json")
+
 	resp, err := client.Do(req)
 	if err != nil {
-		errorReturn = err
-		slog.Error("API request failed", "ERROR", err)
+		slog.Error("API request failed", "error", err)
+		return err
 	}
 	defer resp.Body.Close()
-	bodyText, err := io.ReadAll(resp.Body)
+	bodyText, _ := io.ReadAll(resp.Body)
 	_ = bodyText
-	if err != nil {
-		errorReturn = err
-		slog.Error("Failed to get API response", "ERROR", err)
-	} else {
-		if resp.StatusCode != 200 {
-			errorReturn = errors.New("API-Request failed: " + resp.Status)
-			slog.Error("API-Request failed", "Status", resp.Status, "Request-URL", req.URL, "Request-Method", req.Method)
-		} else {
-			if variables.HomeAssistantLogApiCallResult200 {
-				slog.Info("API-Request successful", "Status", resp.Status, "Request-URL", req.URL, "Request-Method", req.Method)
-			}
-		}
+
+	if resp.StatusCode != http.StatusOK {
+		err = fmt.Errorf("API request failed: %s", resp.Status)
+		slog.Error("API request failed", "status", resp.Status, "url", req.URL, "method", req.Method)
+		return err
 	}
-	//fmt.Printf("%s\n", bodyText)
-	return errorReturn
+
+	if variables.HomeAssistantLogApiCallResult200 {
+		slog.Info("API request successful", "status", resp.Status, "url", req.URL, "method", req.Method)
+	}
+
+	return nil
 }
