@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"solar-monitor/generalUtils"
 	"solar-monitor/homeassistantApi"
+	"solar-monitor/prometheus"
 	"solar-monitor/rctApi"
 	"solar-monitor/rctUtils"
 	"solar-monitor/variables"
@@ -28,6 +29,9 @@ func main() {
 
 	time.Sleep(time.Millisecond * time.Duration(variables.StartDelayInMilliSeconds))
 	go rctUtils.BuildData(c)
+	if variables.EnablePrometheus {
+		go prometheus.StartServer(variables.PrometheusPort)
+	}
 
 	for variables.RctValues[0].TimeNow == "" {
 		fmt.Println("Waiting for data...")
@@ -62,6 +66,13 @@ func main() {
 			totalSolarPowerW, totalHouseConsumptionW, totalGridPowerW,
 			usingSolarPowerOnly,
 		)
+
+		// Update Prometheus metrics
+		if variables.EnablePrometheus {
+			prometheus.UpdateMetrics(solarGenAPowerW, solarGenBPowerW, inverterACPowerW,
+				totalSolarPowerW, totalHouseConsumptionW, totalGridPowerW,
+				usingSolarPowerOnly, variables.SolarPowerAvailable)
+		}
 
 		// Update HomeAssistant
 		if !variables.SolarPowerAvailable || variables.ForceUpdateHomeAssistant ||

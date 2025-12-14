@@ -29,6 +29,14 @@
     dest: "/lib/systemd/system/solar-monitor.service"
   register: new_svc
 
+- name: Open firewall port for Prometheus
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: '2112'
+    jump: ACCEPT
+  ignore_errors: true
+
 - name: Ensure service is enabled and started
   ansible.builtin.systemd:
     name: solar-monitor

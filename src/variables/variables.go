@@ -9,13 +9,14 @@ import (
 // App information
 const (
 	AppName    = "Solar-Monitor"
-	AppVersion = "1.0.2"
+	AppVersion = "1.0.3"
 )
 
 // Configuration constants
 const (
 	InverterIp                                               = "10.0.0.17"
 	InverterPort                                             = "8899"
+	PrometheusPort                                           = "2112"
 	FetchIntervalInMilliSeconds                              = 1000
 	RetryIntervalInMilliSeconds                              = 250
 	MaxRetriesToFetchDataUntilInvalid                        = 60
@@ -31,6 +32,7 @@ var (
 	ClearLoopOutput          = true
 	OutputJson               = true
 	WriteJsonToFile          = true
+	EnablePrometheus         = true
 	JsonFileLocation         string
 	ForceUpdateHomeAssistant bool
 )
