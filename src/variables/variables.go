@@ -14,7 +14,7 @@ const (
 
 // Configuration constants
 const (
-	InverterIp                                               = "10.0.0.17"
+	InverterIp                                               = "192.168.1.17"
 	InverterPort                                             = "8899"
 	PrometheusPort                                           = "2112"
 	FetchIntervalInMilliSeconds                              = 1000
