@@ -9,7 +9,7 @@ import (
 // App information
 const (
 	AppName    = "Solar-Monitor"
-	AppVersion = "1.0.3"
+	AppVersion = "1.0.4"
 )
 
 // Configuration constants
@@ -92,7 +92,7 @@ var CalcValues = []CalcData{
 
 // HomeAssistant configuration
 var (
-	UrlHomeAssistant           = "http://10.0.0.8:8123"
+	UrlHomeAssistant           = "http://192.168.1.8:8123"
 	TokenHomeAssistant         string
 	ApiBoolSolarPowerOnly      = "/api/states/input_boolean.solar_power_only"
 	ApiBoolSolarPowerAvailable = "/api/states/input_boolean.solar_power_available"
