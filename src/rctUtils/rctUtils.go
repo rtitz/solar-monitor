@@ -3,6 +3,7 @@ package rctUtils
 import (
 	"errors"
 	"fmt"
+	"math"
 	"solar-monitor/generalUtils"
 	"solar-monitor/rctApi"
 	"solar-monitor/variables"
@@ -24,6 +25,9 @@ func GetValueRct(connection *rctApi.Connection, id rctApi.Identifier, query stri
 		v, err := connection.QueryFloat32(id)
 		if err != nil {
 			return "", err
+		}
+		if math.IsNaN(float64(v)) || math.IsInf(float64(v), 0) {
+			return "", errors.New("invalid float value from inverter")
 		}
 		vStr := fmt.Sprintf("%.2f", v)
 		if strings.Contains(strings.ToLower(vStr), "invalid") {
