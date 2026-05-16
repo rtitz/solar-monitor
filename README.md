@@ -32,3 +32,14 @@ scrape_configs:
       - targets: ['localhost:2112']
     scrape_interval: 5s
 ```
+
+## Build container
+
+```zsh
+mkdir -p /data/solar-monitor ; chmod 1777 /data/solar-monitor
+TMPDIR=/tmp docker build -t solar-monitor:latest .
+TMPDIR=/tmp docker run -d --name solar-monitor -p 2112:2112 -v /data/solar-monitor:/home/appuser/solar-monitor:Z --restart unless-stopped solar-monitor:latest
+
+# OR run in foreground
+TMPDIR=/tmp docker run -p 2112:2112 -v /data/solar-monitor:/home/appuser/solar-monitor:Z --rm solar-monitor:latest
+```
