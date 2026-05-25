@@ -9,12 +9,12 @@ import (
 // App information
 const (
 	AppName    = "Solar-Monitor"
-	AppVersion = "1.0.5"
+	AppVersion = "1.0.6"
 )
 
 // Configuration constants
 const (
-	InverterIp                                               = "192.168.1.17"
+	InverterIp                                               = "192.168.3.17"
 	InverterPort                                             = "8899"
 	PrometheusPort                                           = "2112"
 	FetchIntervalInMilliSeconds                              = 1000
