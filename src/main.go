@@ -20,9 +20,43 @@ import (
 
 func main() {
 	fmt.Printf("%s %s (%s/%s)\n\n", variables.AppName, variables.AppVersion, variables.GOOS, variables.GOARCH)
-	c, err := rctApi.NewConnection(variables.InverterIp, time.Second*2)
+	var c *rctApi.Connection
+	var err error
+
+	maxRetries := 0               // 0 means retry indefinitely
+	retryDelay := time.Second * 2 // Initial wait time between retries
+
+	for attempt := 1; maxRetries == 0 || attempt <= maxRetries; attempt++ {
+		fmt.Printf("Connecting to inverter at %s:%s (Attempt %d/%s)...\n", variables.InverterIp, variables.InverterPort, attempt, func() string {
+			if maxRetries == 0 {
+				return "∞"
+			}
+			return strconv.Itoa(maxRetries)
+		}())
+
+		c, err = rctApi.NewConnection(variables.InverterIp, time.Second*2)
+		if err == nil {
+			fmt.Println("Successfully connected to inverter!")
+			break
+		}
+
+		fmt.Printf("Connection failed: %v\n", err)
+
+		if attempt < maxRetries || maxRetries == 0 {
+			fmt.Printf("Retrying in %v...\n", retryDelay)
+			time.Sleep(retryDelay)
+			retryDelay *= 2 // Exponential backoff: 2s, 4s, 8s, 16s...
+		}
+	}
+
+	// If all retry attempts failed, exit the application cleanly
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("Error: Could not connect to inverter after %s attempts: %v\n", func() string {
+			if maxRetries == 0 {
+				return "∞"
+			}
+			return strconv.Itoa(maxRetries)
+		}(), err)
 		return
 	}
 	defer c.Close()

@@ -2,6 +2,12 @@
 - hosts: all
   become: true
 
+  # Define your centralized configuration variables here
+  vars:
+    data_dir: "/mnt/cluster-volumes/solar-monitor"
+    listen_port: "2112"
+    timezone: "Europe/Berlin"
+
   pre_tasks:
     - name: Update package cache and install updates
       ansible.builtin.apt:
@@ -9,11 +15,12 @@
         upgrade: full
         cache_valid_time: 43200
         force_apt_get: True
-      when: ansible_distribution in ['Debian', 'Ubuntu']
+      when: ansible_facts['distribution'] in ['Debian', 'Ubuntu']
 
   tasks:
     - name: Skip if OS not supported
       ansible.builtin.meta: end_host
-      when: ansible_distribution not in ['Debian', 'Ubuntu']
+      when: ansible_facts['distribution'] not in ['Debian', 'Ubuntu']
 
     - ansible.builtin.import_tasks: install-app.yml
+    #- ansible.builtin.import_tasks: install-container.yml

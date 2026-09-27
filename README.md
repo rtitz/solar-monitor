@@ -3,11 +3,19 @@
 ### Build the binaries & run the Ansible playbook:
 ```zsh
 cd src && bash build.sh && cd .. && ansible-playbook -i inventory main.yml
+# If podman container:
+ansible-playbook -i inventory main.yml
 ```
 
 ### Example
 ```zsh
 journalctl -u solar-monitor -f
+```
+
+### Build Container
+```zsh
+podman build -t solar-monitor .
+podman run -d -p 0.0.0.0:2112:2112 solar-monitor
 ```
 
 ## Prometheus Integration

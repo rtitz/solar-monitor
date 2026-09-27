@@ -9,13 +9,13 @@ import (
 // App information
 const (
 	AppName    = "Solar-Monitor"
-	AppVersion = "1.0.7"
+	AppVersion = "1.0.8"
 )
 
 // Configuration constants
 const (
 	InverterIp                                               = "192.168.1.17"
-	InverterPort                                             = "8899"
+	InverterPort                                             = "8899" // Ignored by the RCT API connection, as it uses a fixed port internally
 	PrometheusPort                                           = "2112"
 	ForceIpv4                                                = false
 	FetchIntervalInMilliSeconds                              = 1000
