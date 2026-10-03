@@ -17,7 +17,7 @@ const (
 	InverterIp                                               = "192.168.1.17"
 	InverterPort                                             = "8899" // Ignored by the RCT API connection, as it uses a fixed port internally
 	PrometheusPort                                           = "2112"
-	ForceIpv4                                                = false
+	ForceIpv4                                                = true
 	FetchIntervalInMilliSeconds                              = 1000
 	RetryIntervalInMilliSeconds                              = 250
 	MaxRetriesToFetchDataUntilInvalid                        = 60
