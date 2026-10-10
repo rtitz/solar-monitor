@@ -1,7 +1,6 @@
 package variables
 
 import (
-	"os"
 	"runtime"
 	"solar-monitor/rctApi"
 )
@@ -9,7 +8,7 @@ import (
 // App information
 const (
 	AppName    = "Solar-Monitor"
-	AppVersion = "1.0.8"
+	AppVersion = "1.0.9"
 )
 
 // Configuration constants
@@ -112,6 +111,7 @@ var (
 )
 
 func init() {
-	userHome, _ := os.UserHomeDir()
-	JsonFileLocation = userHome + "/solar-monitor/"
+	//userHome, _ := os.UserHomeDir()
+	//JsonFileLocation = userHome + "/solar-monitor/"
+	JsonFileLocation = "log/"
 }

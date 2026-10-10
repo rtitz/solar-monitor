@@ -18,8 +18,10 @@ import (
 	"time"
 )
 
+var BuildNumber = "development-build"
+
 func main() {
-	fmt.Printf("%s %s (%s/%s)\n\n", variables.AppName, variables.AppVersion, variables.GOOS, variables.GOARCH)
+	fmt.Printf("%s %s (%s/%s | Build: %s)\n\n", variables.AppName, variables.AppVersion, variables.GOOS, variables.GOARCH, BuildNumber)
 	var c *rctApi.Connection
 	var err error
 

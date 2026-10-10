@@ -19,5 +19,6 @@ secure*
 
 # Other stuff
 .DS_Store
+tmp/
 
 src/rct/

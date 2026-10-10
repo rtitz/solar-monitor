@@ -1,0 +1,22 @@
+services:
+  solar-monitor:
+    container_name: solar-monitor
+    build:
+      context: .
+      dockerfile: Containerfile 
+    image: localhost/solar-monitor:latest
+    ports:
+      - "2112:2112"
+    environment:
+      - TZ=Europe/Berlin
+    volumes:
+      - ~/app-data/solar-monitor:/app/log:Z
+    userns_mode: keep-id
+    restart: unless-stopped
+
+    # Automated native Podman/Docker log rotation for standard terminal streams (fmt.Printf)
+    logging:
+      driver: k8s-file
+      options:
+        max-size: "10mb"
+        max-file: "3"
